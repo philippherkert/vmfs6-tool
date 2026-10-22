@@ -314,6 +314,7 @@ int doubleIndirectAddressing(const vmfs_inode_t *inode,off_t pos,uint64_t *blk_i
    u_int secondary_pb_index;
    u_int secondary_sub_index;
 
+   *blk_id = 0;
    blk_index = pos / inode->blk_size;
    dprintf("blk_index: %d = pos/inode->blk_size: (%ld/%ld)\n",blk_index, pos, inode->blk_size);
 
@@ -336,8 +337,9 @@ int doubleIndirectAddressing(const vmfs_inode_t *inode,off_t pos,uint64_t *blk_i
    primary_pb_blk_id = inode->blocks[primary_pb_index];
    dprintf("primary_pb_blk_id: 0x%lx, \n", primary_pb_blk_id);
 
+   /* A zero pointer at either level is a hole in a thin file */
    if (!primary_pb_blk_id)
-	  return(-EINVAL);
+	  return(0);
 
    if (!vmfs_bitmap_get_item(fs->sbc, VMFS_BLK_SB_ENTRY(primary_pb_blk_id), VMFS_BLK_SB_ITEM(primary_pb_blk_id), buf))
 	  return(-EIO);
@@ -345,6 +347,9 @@ int doubleIndirectAddressing(const vmfs_inode_t *inode,off_t pos,uint64_t *blk_i
 
    secondary_pb_blk_id = read_le64(buf,secondary_pb_index*sizeof(uint64_t));
    dprintf("secondary_pb_blk_id: 0x%lx, secondary_pb_index: %d\n", secondary_pb_blk_id, secondary_pb_index);
+
+   if (!secondary_pb_blk_id)
+	  return(0);
 
    if (!vmfs_bitmap_get_item(fs->sbc, VMFS_BLK_SB_ENTRY(secondary_pb_blk_id), VMFS_BLK_SB_ITEM(secondary_pb_blk_id), buf))
 	  return(-EIO);
