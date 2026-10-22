@@ -84,13 +84,12 @@ static int vmfs_inode_read(vmfs_inode_t *inode,const u_char *buf)
    } else {
       dprintf("file id %d off %ld blk:\n", inode->id, VMFS_INODE_OFS_BLK_ARRAY);
       //hexdump(buf+VMFS_INODE_OFS_BLK_ARRAY,256);
+      /* A zero entry is a hole in a sparse (thin) file, not the end of the
+       * array: later entries still map data. */
       for(i=0;i<VMFS_INODE_BLK_COUNT;i++)
       {
          inode->blocks[i] = vmfs_inode_read_blk_id(buf,i);
-         if (inode->blocks[i] == 0)	      
-         	break;
-		 dprintf("%d:%016lx\n", i, inode->blocks[i]);				
-         	
+		 dprintf("%d:%016lx\n", i, inode->blocks[i]);
        }
        dprintf("-------\n");
    }
