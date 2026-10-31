@@ -1,3 +1,5 @@
+This fork (branch esxi8-fixes) adds fixes for datastores larger than 16 TiB, thin and lazy-zeroed files, and FUSE 3. Static x86_64 binaries are under Releases (https://github.com/philippherkert/vmfs6-tool/releases). Each fix is also offered upstream as a pull request.
+
 - The project is cloned from Glandium.org. More introductions can be found in https://glandium.org/projects/vmfs-tools/
 - Most code is developped by Christophe Fillot <cf (at) utc.fr> and Mike Hommey <mh (at) glandium.org>.
 - I cloned the project for the modification of vmfs6 supporting.
